@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Open this 😪</title>
+
+<style>
+body{
+margin:0;height:100vh;overflow:hidden;
+background:linear-gradient(135deg,#020617,#0b1220,#1e1b4b,#020617);
+background-size:600% 600%;
+animation:bg 18s ease infinite;
+color:#e5e7eb;
+font-family:Arial,Helvetica,sans-serif;
+display:flex;flex-direction:column;
+justify-content:center;align-items:center;
+text-align:center;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+#character{
+width:120px;height:160px;
+border-radius:20px;
+background:#facc15;
+position:relative;
+animation:float 3s ease-in-out infinite;
+margin-bottom:10px;
+transition:.3s;
+}
+
+.eye{
+width:18px;height:18px;background:#000;
+border-radius:50%;position:absolute;top:40px;
+}
+.eye.left{left:30px}
+.eye.right{right:30px}
+
+#mouth{
+width:40px;height:8px;background:#000;
+border-radius:20px;
+position:absolute;bottom:40px;left:40px;
+transition:.3s;
+}
+.happy{height:14px}
+.sad{transform:rotate(180deg)}
+
+@keyframes float{
+0%{transform:translateY(0)}
+50%{transform:translateY(-14px)}
+100%{transform:translateY(0)}
+}
+
+#meter{
+width:280px;height:12px;
+background:#334155;border-radius:10px;
+overflow:hidden;margin:15px auto;
+}
+#fill{
+height:100%;width:0%;
+background:#22c55e;
+transition:.3s;
+}
+
+h1{font-size:38px;}
+p{font-size:22px;max-width:740px;min-height:110px;}
+
+button{
+padding:14px 34px;border-radius:18px;
+border:none;font-size:18px;
+margin:10px;cursor:pointer;
+transition:.2s;
+}
+button:hover{transform:scale(1.1)}
+
+#no{position:absolute;}
+
+#pop{
+position:fixed;bottom:20px;
+background:#22c55e;color:black;
+padding:12px 18px;border-radius:14px;
+opacity:0;transition:.4s;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="meter"><div id="fill"></div></div>
+
+<div id="character">
+<div class="eye left"></div>
+<div class="eye right"></div>
+<div id="mouth"></div>
+</div>
+
+<h1 id="level">Chill Mode 😌</h1>
+<p id="text"></p>
+
+<div>
+<button onclick="yes()">Yes</button>
+<button id="no" onmouseover="run()">No</button>
+<button onclick="maybe()">Maybe</button>
+</div>
+
+<div id="pop"></div>
+
+<script>
+
+/* 😈 LONG SAVAGE LEVELS */
+
+const levels=[
+[
+"Did you smile when this opened?",
+"You enjoying this already huh?",
+"You lowkey curious right?",
+"You like fun stuff like this don’t you?",
+"You not bored at all right?"
+],
+[
+"You laughing a little already 😂",
+"You enjoying clicking way too much now",
+"You lowkey having fun huh?",
+"You stayed instead of closing it 👀",
+"That means something 😏"
+],
+[
+"You definitely entertained now 😂",
+"You would replay this wouldn’t you?",
+"You like attention a little huh 😈",
+"You smiling for real now",
+"You enjoying me roasting you"
+],
+[
+"You stuck till the end now 😈",
+"You clearly having fun",
+"You can’t deny it anymore 😂",
+"You enjoying this too much now",
+"Alright alright you’re exposed 😏"
+]
+];
+
+const roastYes=[
+"KNEW IT 😈",
+"Caught in 4K 📸",
+"Don’t lie now 😂",
+"Obviously you do",
+"Easy read 😏",
+"Predictable but funny"
+];
+
+const roastMaybe=[
+"That maybe loud as hell 😂",
+"That’s a shy yes",
+"You thinking too hard",
+"I’ll count that 😏",
+"Hesitation detected"
+];
+
+const roastNo=[
+"CAP 🧢",
+"Big lie 😂",
+"Try again",
+"I don’t believe you",
+"Yeah right 🙄",
+"Nice acting"
+];
+
+let level=0,step=0,score=0,dodges=0;
+
+const text=document.getElementById("text");
+const fill=document.getElementById("fill");
+const lvl=document.getElementById("level");
+const mouth=document.getElementById("mouth");
+const pop=document.getElementById("pop");
+
+/* 🔊 tiny sound */
+
+let ctx=new (window.AudioContext||window.webkitAudioContext)();
+function beep(f){
+let o=ctx.createOscillator();
+let g=ctx.createGain();
+o.frequency.value=f;
+o.type="sine";
+o.connect(g);g.connect(ctx.destination);
+o.start();
+setTimeout(()=>o.stop(),150);
+}
+
+/* 📜 typing */
+
+show(levels[0][0]);
+
+function show(msg){
+text.innerHTML="";
+let i=0;
+let t=setInterval(()=>{
+text.innerHTML+=msg[i++];
+if(i>=msg.length) clearInterval(t);
+},28);
+}
+
+function meter(){
+fill.style.width=Math.min(score,100)+"%";
+}
+
+function smile(){mouth.className="happy";}
+function sad(){mouth.className="sad";}
+function neutral(){mouth.className="";}
+
+function popup(msg){
+pop.innerText=msg;
+pop.style.opacity=1;
+setTimeout(()=>pop.style.opacity=0,1200);
+}
+
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+
+function next(){
+step++;
+if(step>=levels[level].length){
+level++;
+step=0;
+
+lvl.innerText=["Chill Mode 😌","Fun Mode 😂","Roast Mode 😈","Menace Mode 🔥"][level]||"";
+
+popup("LEVEL UP!");
+
+beep(700);
+
+if(level>=levels.length){end();return;}
+}
+show(levels[level][step]);
+}
+
+function yes(){
+score+=8;meter();smile();beep(600);
+popup(rand(roastYes));
+next();
+}
+
+function maybe(){
+score+=4;meter();neutral();beep(400);
+popup(rand(roastMaybe));
+next();
+}
+
+function run(){
+dodges++;
+no.style.left=Math.random()*(innerWidth-120)+"px";
+no.style.top=Math.random()*(innerHeight-80)+"px";
+sad();beep(200);
+
+if(dodges===5) popup("Stop running 😈");
+if(dodges===9) secret();
+}
+
+function secret(){
+document.body.innerHTML=`
+<h1>Secret Ending 😈</h1>
+<p>You tried avoiding the answers too much.</p>
+<p>Which means you cared 😂</p>
+<p>Nice try though.</p>
+`;
+}
+
+function end(){
+document.body.innerHTML=`
+<h1>You survived 😎</h1>
+<p>You definitely enjoyed this.</p>
+<p>No denying it now 😂</p>
+<p>Come back for round two 😈</p>
+`;
+}
+
+</script>
+</body>
+</html>
